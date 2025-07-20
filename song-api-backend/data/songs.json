@@ -1,0 +1,43 @@
+{
+  "songs": [
+    {
+      "id": "1704634800000abc123",
+      "title": "Tezeta",
+      "artist": "Mulatu Astatke",
+      "album": "Mulatu of Ethiopia",
+      "genre": "Ethio-jazz",
+      "year": 1972,
+      "duration": 285,
+      "albumCover": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+      "description": "Classic Ethiopian jazz composition",
+      "createdAt": "2024-01-07T12:00:00.000Z",
+      "updatedAt": "2024-01-07T12:00:00.000Z"
+    },
+    {
+      "id": "1704634900000def456",
+      "title": "Yegelle Tezeta",
+      "artist": "Emahoy Tsegué-Maryam Guèbrou",
+      "album": "Piano Solo",
+      "genre": "Classical",
+      "year": 1967,
+      "duration": 320,
+      "albumCover": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400",
+      "description": "Beautiful piano composition by the Ethiopian nun",
+      "createdAt": "2024-01-07T12:01:40.000Z",
+      "updatedAt": "2024-01-07T12:01:40.000Z"
+    },
+    {
+      "id": "1704635000000ghi789",
+      "title": "Ambassel",
+      "artist": "Alemayehu Eshete",
+      "album": "Addis Golden Era",
+      "genre": "Ethiopian Soul",
+      "year": 1969,
+      "duration": 198,
+      "albumCover": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+      "description": "Soulful Ethiopian classic",
+      "createdAt": "2024-01-07T12:03:20.000Z",
+      "updatedAt": "2024-01-07T12:03:20.000Z"
+    }
+  ]
+}
