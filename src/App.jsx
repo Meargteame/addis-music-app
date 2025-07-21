@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import SongCard from './components/SongCard';
 import AddSongForm from './components/AddSongForm';
+import { addSong } from './features/songs/songsSlice';
 
 const App = () => {
-  const [songs, setSongs] = useState([
-    { id: 1, title: 'Afro Vibe', artist: 'Yared Beats', album: 'Ethiowave', year: 2023 },
-    { id: 2, title: 'Roha Funk', artist: 'Roha Band', album: 'Roha Classics', year: 1998 }
-  ]);
+  const dispatch = useDispatch();
+  const songs = useSelector(state => state.songs.list);
 
   const handleAddSong = (newSong) => {
-    setSongs(prev => [newSong, ...prev]);
+    dispatch(addSong(newSong));
   };
 
   return (
