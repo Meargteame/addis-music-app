@@ -1,4 +1,33 @@
 import React, { useState } from 'react';
+import styled from '@emotion/styled';
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing(1)};
+  margin-bottom: ${({ theme }) => theme.spacing(4)};
+`;
+
+const Input = styled.input`
+  padding: ${({ theme }) => theme.spacing(1)};
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+`;
+
+const Button = styled.button`
+  padding: ${({ theme }) => theme.spacing(1)};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #303f9f;
+  }
+`;
 
 const AddSongForm = ({ onAdd }) => {
   const [form, setForm] = useState({
@@ -20,14 +49,14 @@ const AddSongForm = ({ onAdd }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+    <Form onSubmit={handleSubmit}>
       <h2>Add New Song</h2>
-      <input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
-      <input name="artist" value={form.artist} onChange={handleChange} placeholder="Artist" required />
-      <input name="album" value={form.album} onChange={handleChange} placeholder="Album" />
-      <input name="year" value={form.year} onChange={handleChange} placeholder="Year" type="number" />
-      <button type="submit">Add Song</button>
-    </form>
+      <Input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
+      <Input name="artist" value={form.artist} onChange={handleChange} placeholder="Artist" required />
+      <Input name="album" value={form.album} onChange={handleChange} placeholder="Album" />
+      <Input name="year" value={form.year} onChange={handleChange} placeholder="Year" type="number" />
+      <Button type="submit">Add Song</Button>
+    </Form>
   );
 };
 
