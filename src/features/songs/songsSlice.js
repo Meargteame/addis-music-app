@@ -27,16 +27,46 @@ const songsSlice = createSlice({
     },
     deleteSong: (state, action) => {
       state.list = state.list.filter(song => song.id !== action.payload);
-    }
+    },
+
+    addSongStart: (state) => { state.loading = true; },
+  addSongSuccess: (state, action) => {
+    state.loading = false;
+    state.list.unshift(action.payload);
+  },
+  addSongFailure: (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+  },
+
+  deleteSongStart: (state) => { state.loading = true; },
+  deleteSongSuccess: (state, action) => {
+    state.loading = false;
+    state.list = state.list.filter(song => song.id !== action.payload);
+  },
+  deleteSongFailure: (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+  }
   }
 });
 
 export const {
-  fetchSongsStart,
+ 
+ fetchSongsStart,
   fetchSongsSuccess,
   fetchSongsFailure,
+  addSongStart,
+  addSongSuccess,
+  addSongFailure,
+  deleteSongStart,
+  deleteSongSuccess,
+  deleteSongFailure,
   addSong,
   deleteSong
 } = songsSlice.actions;
 
 export default songsSlice.reducer;
+
+
+
