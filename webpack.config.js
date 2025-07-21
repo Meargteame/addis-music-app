@@ -6,32 +6,33 @@ export default {
   output: {
     path: path.resolve('dist'),
     filename: 'bundle.js',
-    clean: true
+    clean: true,
   },
+  mode: 'development',
   devServer: {
     static: './dist',
     port: 3000,
-    open: true
+    open: true,
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.jsx?$/, // .js and .jsx
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: 'babel-loader',
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
+        test: /\.css$/, // optional, for future styling
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'], // so we can omit extensions in imports
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html'
-    })
-  ]
+      template: './public/index.html',
+    }),
+  ],
 };

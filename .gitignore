@@ -1,25 +1,3 @@
-# Node modules
-/node_modules/
-
-# Output build files
-/dist/
-
-# Environment variables
 .env
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# System files
-.DS_Store
-Thumbs.db
-
-# IDE/editor settings
-.vscode/
-.idea/
-*.swp
-
-# Babel cache
-.babel-cache/
+/node_modules/
+/dist/
