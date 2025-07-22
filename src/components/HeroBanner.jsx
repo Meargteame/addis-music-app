@@ -280,37 +280,7 @@ const StatItem = styled.div`
   }
 `;
 
-const ThemeToggle = styled.button`
-  position: absolute;
-  top: ${({ theme }) => theme.spacing(3)};
-  right: ${({ theme }) => theme.spacing(3)};
-  width: 48px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: ${({ theme }) => theme.fontSize.lg};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
 const HeroBanner = ({ className, songsCount = 0 }) => {
-  const { mode, toggleTheme } = useTheme();
-  
   const handleGetStarted = () => {
     document.querySelector('[data-section="add-song"]')?.scrollIntoView({ 
       behavior: 'smooth' 
@@ -325,13 +295,6 @@ const HeroBanner = ({ className, songsCount = 0 }) => {
   
   return (
     <HeroContainer>
-      <ThemeToggle 
-        onClick={toggleTheme} 
-        title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
-      >
-        {mode === 'light' ? '🌙' : '☀️'}
-      </ThemeToggle>
-      
       <HeroContent>
         <HeroText>
           <HeroTitle>

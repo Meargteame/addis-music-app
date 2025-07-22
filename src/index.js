@@ -9,6 +9,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 
+// Initialize MirageJS mock server in development
+if (process.env.NODE_ENV === 'development') {
+  const { makeServer } = require('./server');
+  makeServer({ environment: 'development' });
+  console.log('🎭 MirageJS mock server initialized');
+}
+
 const root = createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>

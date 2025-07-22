@@ -5,11 +5,13 @@ import { store } from './app/store';
 import Layout from './components/Layout';
 import Navbar from './components/Navbar';
 import HeroBanner from './components/HeroBanner';
+import UserProfile from './components/UserProfile';
+import UserProfilePage from './components/UserProfilePage';
 import StatsDashboard from './components/StatsDashboard';
 import FeaturedArtists from './components/FeaturedArtists';
 import GenreSelector from './components/GenreSelector';
-import Testimonials from './components/Testimonials';
-import AddSongForm from './components/AddSongForm';
+import AddSongModal from './components/AddSongModal';
+import AddSongButton from './components/AddSongButton';
 import SongCard from './components/SongCard';
 import LoadingSpinner from './components/LoadingSpinner';
 import {
@@ -89,25 +91,43 @@ const SongsGrid = styled.div`
 `;
 
 const AddSongSection = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing(6)};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  margin-bottom: ${({ theme }) => theme.spacing(6)};
-`;
-
-const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing(4)} ${({ theme }) => theme.spacing(6)};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
   
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing(2)};
+    gap: ${({ theme }) => theme.spacing(3)};
+    padding: ${({ theme }) => theme.spacing(4)};
     text-align: center;
   }
+`;
+
+const AddSongInfo = styled.div`
+  flex: 1;
+  
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+`;
+
+const AddSongTitle = styled.h3`
+  font-size: ${({ theme }) => theme.fontSize.xl};
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin: 0 0 ${({ theme }) => theme.spacing(1)} 0;
+`;
+
+const AddSongDesc = styled.p`
+  font-size: ${({ theme }) => theme.fontSize.sm};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin: 0;
 `;
 
 const SectionSubtitle = styled.h3`
@@ -115,22 +135,6 @@ const SectionSubtitle = styled.h3`
   font-weight: ${({ theme }) => theme.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
-`;
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing(8)};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  
-  h3 {
-    font-size: ${({ theme }) => theme.fontSize.xl};
-    margin-bottom: ${({ theme }) => theme.spacing(2)};
-    color: ${({ theme }) => theme.colors.text.primary};
-  }
-  
-  p {
-    margin-bottom: ${({ theme }) => theme.spacing(1)};
-  }
 `;
 
 const StatsInfo = styled.div`
@@ -153,9 +157,23 @@ const StatsBadge = styled.span`
   font-weight: ${({ theme }) => theme.fontWeight.medium};
 `;
 
+const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing(4)};
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing(2)};
+    text-align: center;
+  }
+`;
+
 function SongsList() {
   const dispatch = useDispatch();
   const { list: songs, loading, error } = useSelector(state => state.songs);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSongsStart());
@@ -185,13 +203,14 @@ function SongsList() {
   return (
     <>
       <AddSongSection>
-        <SectionHeader>
-          <SectionSubtitle>Add New Song</SectionSubtitle>
-          <StatsInfo>
-            <span>Manage your personal music collection</span>
-          </StatsInfo>
-        </SectionHeader>
-        <AddSongForm onAdd={handleAddSong} />
+        <AddSongInfo>
+          <AddSongTitle>Expand Your Music Collection</AddSongTitle>
+          <AddSongDesc>Add new songs to build your personal Ethiopian music library</AddSongDesc>
+        </AddSongInfo>
+        <AddSongButton 
+          variant="secondary" 
+          onClick={() => setIsAddModalOpen(true)} 
+        />
       </AddSongSection>
 
       <SectionHeader>
@@ -205,11 +224,7 @@ function SongsList() {
       </SectionHeader>
 
       {songs.length === 0 ? (
-        <EmptyState>
-          <h3>🎵 No songs yet</h3>
-          <p>Add your first song to get started with your music collection!</p>
-          <p>Start building your personal Ethiopian music library.</p>
-        </EmptyState>
+        <AddSongButton onClick={() => setIsAddModalOpen(true)} />
       ) : (
         <SongsGrid>
           {songs.map(song => (
@@ -222,6 +237,12 @@ function SongsList() {
           ))}
         </SongsGrid>
       )}
+      
+      <AddSongModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddSong}
+      />
     </>
   );
 }
@@ -276,6 +297,9 @@ function AppContent() {
           </Section>
         );
       
+      case 'profile':
+        return <UserProfilePage onBack={() => setActiveSection('home')} />;
+      
       default: // 'home'
         return (
           <>
@@ -297,11 +321,6 @@ function AppContent() {
             {/* Genre Selection */}
             <Section>
               <GenreSelector onGenreSelect={handleGenreSelect} />
-            </Section>
-            
-            {/* User Testimonials */}
-            <Section>
-              <Testimonials />
             </Section>
             
             {/* Music Library Preview */}

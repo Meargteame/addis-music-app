@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { FiUsers, FiTrendingUp, FiStar, FiMusic, FiHeart, FiHeadphones } from 'react-icons/fi';
+import { fetchStatsStart } from '../features/user/userSlice';
+import { selectUserStats, selectUserLoading } from '../features/user/userSlice';
 
 const countUp = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -148,28 +151,29 @@ const SectionSubtitle = styled.p`
   line-height: 1.6;
 `;
 
-const StatsDashboard = ({ 
-  customersCount = 320000, 
-  songsCount = 47000, 
-  satisfaction = 97,
-  className 
-}) => {
+const StatsDashboard = ({ className }) => {
+  const dispatch = useDispatch();
+  const stats = useSelector(selectUserStats);
+  const loading = useSelector(selectUserLoading);
+
+  useEffect(() => {
+    dispatch(fetchStatsStart());
+  }, [dispatch]);
+
+  // Default stats while loading or if no data
+  const defaultStats = {
+    total_songs: 47,
+    total_artists: 12,
+    popular_genres: { 'jazz': 8, 'pop': 6, 'traditional': 5 },
+    total_plays: 1250
+  };
+
+  const currentStats = stats || defaultStats;
+
   const statsData = [
     {
-      id: 'customers',
-      number: `${Math.floor(customersCount / 1000)}K`,
-      label: 'Active Users',
-      description: 'Music lovers enjoying Ethiopian sounds worldwide',
-      icon: <FiUsers />,
-      iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-      gradient: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
-      trend: 'up',
-      trendValue: '+12%',
-      delay: '0.1s'
-    },
-    {
       id: 'songs',
-      number: `${Math.floor(songsCount / 1000)}K`,
+      number: currentStats.total_songs?.toString() || '0',
       label: 'Songs Collection',
       description: 'Curated Ethiopian tracks from traditional to modern',
       icon: <FiMusic />,
@@ -177,21 +181,43 @@ const StatsDashboard = ({
       gradient: 'linear-gradient(90deg, #10b981, #059669)',
       trend: 'up',
       trendValue: '+8%',
+      delay: '0.1s'
+    },
+    {
+      id: 'artists',
+      number: currentStats.total_artists?.toString() || '0',
+      label: 'Featured Artists',
+      description: 'Ethiopian musicians and international collaborations',
+      icon: <FiUsers />,
+      iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      gradient: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+      trend: 'up',
+      trendValue: '+12%',
       delay: '0.2s'
     },
     {
-      id: 'satisfaction',
-      number: `${satisfaction}%`,
-      label: 'User Satisfaction',
-      description: 'Based on user ratings and feedback scores',
-      icon: <FiStar />,
+      id: 'plays',
+      number: currentStats.total_plays?.toString() || '0',
+      label: 'Total Plays',
+      description: 'Songs played by music lovers worldwide',
+      icon: <FiHeadphones />,
       iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
       gradient: 'linear-gradient(90deg, #f59e0b, #d97706)',
       trend: 'up',
-      trendValue: '+2%',
+      trendValue: '+15%',
       delay: '0.3s'
     }
   ];
+
+  if (loading && !stats) {
+    return (
+      <StatsContainer className={className}>
+        <StatsGrid>
+          <div>Loading statistics...</div>
+        </StatsGrid>
+      </StatsContainer>
+    );
+  }
 
   return (
     <StatsContainer className={className}>

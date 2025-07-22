@@ -28,17 +28,18 @@ const NavContainer = styled.nav`
 `;
 
 const NavContent = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 ${({ theme }) => theme.spacing(4)};
+  padding: 0 ${({ theme }) => theme.spacing(3)};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  height: 80px;
+  width: 100%;
   
   @media (max-width: 768px) {
     padding: 0 ${({ theme }) => theme.spacing(2)};
-    height: 60px;
+    height: 70px;
   }
 `;
 
@@ -50,10 +51,12 @@ const Logo = styled.div`
   font-weight: ${({ theme }) => theme.fontWeight.bold};
   color: ${({ theme }) => theme.colors.text.primary};
   cursor: pointer;
+  flex-shrink: 0;
+  margin-right: ${({ theme }) => theme.spacing(6)};
   
   .logo-icon {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.secondary});
     border-radius: ${({ theme }) => theme.borderRadius.md};
     display: flex;
@@ -65,9 +68,10 @@ const Logo = styled.div`
   
   @media (max-width: 768px) {
     font-size: ${({ theme }) => theme.fontSize.lg};
+    margin-right: ${({ theme }) => theme.spacing(2)};
     .logo-icon {
-      width: 35px;
-      height: 35px;
+      width: 40px;
+      height: 40px;
     }
   }
 `;
@@ -76,6 +80,7 @@ const NavLinks = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(6)};
+  flex-shrink: 0;
   
   @media (max-width: 768px) {
     display: none;
@@ -95,6 +100,8 @@ const NavLink = styled.a`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   transition: all ${({ theme }) => theme.transitions.fast};
   position: relative;
+  white-space: nowrap;
+  flex-shrink: 0;
   
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
@@ -131,7 +138,7 @@ const SearchContainer = styled.div`
 
 const SearchInput = styled.input`
   width: 100%;
-  padding: ${({ theme }) => theme.spacing(2)} ${({ theme }) => theme.spacing(3)};
+  padding: ${({ theme }) => theme.spacing(2.5)} ${({ theme }) => theme.spacing(3)};
   padding-left: ${({ theme }) => theme.spacing(10)};
   background: ${({ theme }) => theme.colors.background};
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -164,11 +171,13 @@ const NavActions = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(2)};
+  flex-shrink: 0;
+  margin-left: auto;
 `;
 
 const ActionButton = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
   background: transparent;
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -178,6 +187,7 @@ const ActionButton = styled.button`
   justify-content: center;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
+  font-size: ${({ theme }) => theme.fontSize.lg};
   
   &:hover {
     background: ${({ theme }) => theme.colors.primary}10;
@@ -194,8 +204,8 @@ const ActionButton = styled.button`
 
 const MobileMenuButton = styled.button`
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
   background: transparent;
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -204,6 +214,7 @@ const MobileMenuButton = styled.button`
   justify-content: center;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
+  font-size: ${({ theme }) => theme.fontSize.lg};
   
   &:hover {
     background: ${({ theme }) => theme.colors.primary}10;
@@ -277,8 +288,8 @@ const UserProfile = styled.div`
 `;
 
 const Avatar = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
   background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.secondary});
   display: flex;
@@ -369,7 +380,11 @@ const Navbar = ({ activeSection, onNavigate }) => {
         </SearchContainer>
         
         <NavActions>
-          <ActionButton onClick={toggleTheme} title="Toggle theme">
+          <ActionButton 
+            onClick={toggleTheme} 
+            title={`Switch to ${theme.mode === 'light' ? 'dark' : 'light'} mode`}
+            className={theme.mode === 'dark' ? 'active' : ''}
+          >
             {theme.mode === 'dark' ? <FiSun /> : <FiMoon />}
           </ActionButton>
           
@@ -377,11 +392,14 @@ const Navbar = ({ activeSection, onNavigate }) => {
             <FiHeart />
           </ActionButton>
           
-          <ActionButton title="Settings">
+          <ActionButton 
+            title="Settings & Profile"
+            onClick={() => handleNavigation('profile')}
+          >
             <FiSettings />
           </ActionButton>
           
-          <UserProfile>
+          <UserProfile onClick={() => handleNavigation('profile')}>
             <Avatar>M</Avatar>
             <UserInfo>
               <UserName>Meareg</UserName>
