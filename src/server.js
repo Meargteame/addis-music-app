@@ -1,5 +1,36 @@
 import { createServer, Model, Factory, Response } from 'miragejs';
 
+// localStorage utility functions for data persistence
+const STORAGE_KEYS = {
+  SONGS: 'addis-music-songs',
+  USER: 'addis-music-user',
+  LAST_SEED: 'addis-music-last-seed'
+};
+
+const saveToStorage = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.warn('Failed to save to localStorage:', error);
+  }
+};
+
+const loadFromStorage = (key) => {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.warn('Failed to load from localStorage:', error);
+    return null;
+  }
+};
+
+const clearStorage = () => {
+  Object.values(STORAGE_KEYS).forEach(key => {
+    localStorage.removeItem(key);
+  });
+};
+
 export function makeServer({ environment = 'development' } = {}) {
   let server = createServer({
     environment,
@@ -119,11 +150,37 @@ export function makeServer({ environment = 'development' } = {}) {
     },
 
     seeds(server) {
-      // Create initial songs
-      server.createList('song', 12);
+      // Check if we have existing data in localStorage
+      const existingSongs = loadFromStorage(STORAGE_KEYS.SONGS);
+      const existingUser = loadFromStorage(STORAGE_KEYS.USER);
+      const lastSeedTime = loadFromStorage(STORAGE_KEYS.LAST_SEED);
       
-      // Create user
-      server.create('user');
+      // Only seed if no existing data or if it's been more than a day
+      const shouldSeed = !existingSongs || !lastSeedTime || 
+        (Date.now() - lastSeedTime > 24 * 60 * 60 * 1000);
+
+      if (existingSongs && existingSongs.length > 0 && !shouldSeed) {
+        // Load existing songs from localStorage
+        console.log('Loading existing songs from localStorage:', existingSongs.length);
+        existingSongs.forEach(songData => {
+          server.create('song', songData);
+        });
+      } else {
+        // Create initial songs and save to localStorage
+        console.log('Creating new seed data...');
+        const newSongs = server.createList('song', 12);
+        saveToStorage(STORAGE_KEYS.SONGS, newSongs.map(song => song.attrs));
+        saveToStorage(STORAGE_KEYS.LAST_SEED, Date.now());
+      }
+
+      if (existingUser && !shouldSeed) {
+        // Load existing user from localStorage
+        server.create('user', existingUser);
+      } else {
+        // Create user and save to localStorage
+        const newUser = server.create('user');
+        saveToStorage(STORAGE_KEYS.USER, newUser.attrs);
+      }
     },
 
     routes() {
@@ -219,6 +276,10 @@ export function makeServer({ environment = 'development' } = {}) {
 
         const newSong = schema.songs.create(songData);
         
+        // Save updated songs to localStorage
+        const allSongs = schema.songs.all().models.map(song => song.attrs);
+        saveToStorage(STORAGE_KEYS.SONGS, allSongs);
+        
         return successResponse(
           newSong.attrs, 
           `Song "${newSong.title}" by ${newSong.artist} created successfully`
@@ -235,6 +296,10 @@ export function makeServer({ environment = 'development' } = {}) {
 
         const attrs = JSON.parse(request.requestBody);
         song.update(attrs);
+
+        // Save updated songs to localStorage
+        const allSongs = schema.songs.all().models.map(song => song.attrs);
+        saveToStorage(STORAGE_KEYS.SONGS, allSongs);
 
         return successResponse(
           song.attrs, 
@@ -253,6 +318,10 @@ export function makeServer({ environment = 'development' } = {}) {
         const songTitle = song.title;
         const songArtist = song.artist;
         song.destroy();
+
+        // Save updated songs to localStorage
+        const allSongs = schema.songs.all().models.map(song => song.attrs);
+        saveToStorage(STORAGE_KEYS.SONGS, allSongs);
 
         return successResponse(
           { deleted_song_id: request.params.id },
@@ -320,6 +389,10 @@ export function makeServer({ environment = 'development' } = {}) {
         const newPlayCount = (song.play_count || 0) + 1;
         song.update({ play_count: newPlayCount });
 
+        // Save updated songs to localStorage
+        const allSongs = schema.songs.all().models.map(song => song.attrs);
+        saveToStorage(STORAGE_KEYS.SONGS, allSongs);
+
         return successResponse(
           { 
             song_id: song.id,
@@ -376,6 +449,53 @@ export function makeServer({ environment = 'development' } = {}) {
         );
       });
 
+      // POST /api/admin/reset - Reset all data to initial state
+      this.post('/admin/reset', (schema) => {
+        // Clear localStorage
+        clearStorage();
+        
+        // Clear current schema
+        schema.songs.all().destroy();
+        schema.users.all().destroy();
+        
+        // Recreate initial data
+        const newSongs = server.createList('song', 12);
+        const newUser = server.create('user');
+        
+        // Save to localStorage
+        saveToStorage(STORAGE_KEYS.SONGS, newSongs.map(song => song.attrs));
+        saveToStorage(STORAGE_KEYS.USER, newUser.attrs);
+        saveToStorage(STORAGE_KEYS.LAST_SEED, Date.now());
+
+        return successResponse(
+          { 
+            songs_count: newSongs.length,
+            message: 'All data reset to initial state'
+          },
+          'Database reset successfully'
+        );
+      });
+
+      // GET /api/admin/storage-info - Get localStorage usage info
+      this.get('/admin/storage-info', () => {
+        const songs = loadFromStorage(STORAGE_KEYS.SONGS);
+        const user = loadFromStorage(STORAGE_KEYS.USER);
+        const lastSeed = loadFromStorage(STORAGE_KEYS.LAST_SEED);
+
+        const storageInfo = {
+          songs_in_storage: songs ? songs.length : 0,
+          user_in_storage: !!user,
+          last_seed_date: lastSeed ? new Date(lastSeed).toISOString() : null,
+          storage_keys: STORAGE_KEYS,
+          storage_size_estimate: {
+            songs: songs ? JSON.stringify(songs).length : 0,
+            user: user ? JSON.stringify(user).length : 0
+          }
+        };
+
+        return successResponse(storageInfo, 'Storage information retrieved');
+      });
+
       // Fallback for unmatched routes
       this.passthrough();
     },
@@ -383,3 +503,33 @@ export function makeServer({ environment = 'development' } = {}) {
 
   return server;
 }
+
+// Export utility functions for manual localStorage management
+export const storageUtils = {
+  save: saveToStorage,
+  load: loadFromStorage,
+  clear: clearStorage,
+  keys: STORAGE_KEYS,
+  
+  // Helper functions
+  getSongs: () => loadFromStorage(STORAGE_KEYS.SONGS),
+  getUser: () => loadFromStorage(STORAGE_KEYS.USER),
+  clearAll: () => clearStorage(),
+  
+  // Debug info
+  getStorageInfo: () => {
+    const songs = loadFromStorage(STORAGE_KEYS.SONGS);
+    const user = loadFromStorage(STORAGE_KEYS.USER);
+    const lastSeed = loadFromStorage(STORAGE_KEYS.LAST_SEED);
+    
+    return {
+      songs: songs ? songs.length : 0,
+      user: !!user,
+      lastSeed: lastSeed ? new Date(lastSeed).toLocaleString() : null,
+      totalSize: Object.values(STORAGE_KEYS).reduce((size, key) => {
+        const data = localStorage.getItem(key);
+        return size + (data ? data.length : 0);
+      }, 0)
+    };
+  }
+};
