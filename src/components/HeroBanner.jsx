@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
-import { FiPlay, FiArrowRight, FiMusic, FiUsers, FiStar } from 'react-icons/fi';
+import { FiPlus, FiMusic, FiUsers, FiStar, FiDisc } from 'react-icons/fi';
 import { useTheme } from '../contexts/ThemeContext';
 
 // Floating animation for background elements
@@ -280,17 +280,27 @@ const StatItem = styled.div`
   }
 `;
 
-const HeroBanner = ({ className, songsCount = 0 }) => {
-  const handleGetStarted = () => {
-    document.querySelector('[data-section="add-song"]')?.scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+const HeroBanner = ({ className, songsCount = 0, onAddSong, onNavigateToLibrary }) => {
+  const handleAddSong = () => {
+    if (onAddSong) {
+      onAddSong();
+    } else {
+      // Scroll to add song section if no callback provided
+      document.querySelector('[data-section="add-song"]')?.scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
   };
   
-  const handleSeeMore = () => {
-    document.querySelector('[data-section="music-collection"]')?.scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+  const handleBrowseLibrary = () => {
+    if (onNavigateToLibrary) {
+      onNavigateToLibrary();
+    } else {
+      // Scroll to music collection section if no callback provided
+      document.querySelector('[data-section="music-collection"]')?.scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
   };
   
   return (
@@ -316,14 +326,14 @@ const HeroBanner = ({ className, songsCount = 0 }) => {
           </HeroSubtitle>
           
           <ButtonGroup>
-            <PrimaryButton onClick={handleGetStarted}>
-              <FiPlay />
-              Get Started
+            <PrimaryButton onClick={handleAddSong}>
+              <FiPlus />
+              Add Song
             </PrimaryButton>
             
-            <SecondaryButton onClick={handleSeeMore}>
-              See More
-              <FiArrowRight />
+            <SecondaryButton onClick={handleBrowseLibrary}>
+              Browse Library
+              <FiDisc />
             </SecondaryButton>
           </ButtonGroup>
           

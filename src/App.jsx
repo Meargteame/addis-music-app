@@ -170,10 +170,9 @@ const SectionHeader = styled.div`
   }
 `;
 
-function SongsList() {
+function SongsList({ onOpenAddModal }) {
   const dispatch = useDispatch();
   const { list: songs, loading, error } = useSelector(state => state.songs);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSongsStart());
@@ -209,7 +208,7 @@ function SongsList() {
         </AddSongInfo>
         <AddSongButton 
           variant="secondary" 
-          onClick={() => setIsAddModalOpen(true)} 
+          onClick={onOpenAddModal || (() => console.warn('Add song handler not provided'))} 
         />
       </AddSongSection>
 
@@ -224,7 +223,7 @@ function SongsList() {
       </SectionHeader>
 
       {songs.length === 0 ? (
-        <AddSongButton onClick={() => setIsAddModalOpen(true)} />
+        <AddSongButton onClick={onOpenAddModal || (() => console.warn('Add song handler not provided'))} />
       ) : (
         <SongsGrid>
           {songs.map(song => (
@@ -237,18 +236,14 @@ function SongsList() {
           ))}
         </SongsGrid>
       )}
-      
-      <AddSongModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAdd={handleAddSong}
-      />
     </>
   );
 }
 
 function AppContent() {
+  const dispatch = useDispatch();
   const [activeSection, setActiveSection] = useState('home');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { list: songs } = useSelector(state => state.songs);
 
   const handleNavigation = (sectionId) => {
@@ -266,6 +261,11 @@ function AppContent() {
     // TODO: Implement genre filtering logic
   };
 
+  const handleAddSong = (newSong) => {
+    dispatch(addSongStart(newSong));
+    setIsAddModalOpen(false);
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'library':
@@ -273,7 +273,9 @@ function AppContent() {
           <Section id="library" className="library-section">
             <Container>
               <SectionTitle>Your Music Library</SectionTitle>
-              <SongsList />
+              <SongsList 
+                onOpenAddModal={() => setIsAddModalOpen(true)}
+              />
             </Container>
           </Section>
         );
@@ -305,7 +307,11 @@ function AppContent() {
           <>
             {/* Hero Section */}
             <Section id="home" className="hero-section">
-              <HeroBanner songsCount={songs.length} />
+              <HeroBanner 
+                songsCount={songs.length} 
+                onAddSong={() => setIsAddModalOpen(true)}
+                onNavigateToLibrary={() => setActiveSection('library')}
+              />
             </Section>
             
             {/* Statistics Dashboard */}
@@ -327,7 +333,7 @@ function AppContent() {
             <Section className="library-section">
               <Container>
                 <SectionTitle>Your Music Library</SectionTitle>
-                <SongsList />
+                <SongsList onOpenAddModal={() => setIsAddModalOpen(true)} />
               </Container>
             </Section>
           </>
@@ -341,6 +347,11 @@ function AppContent() {
       <MainContent>
         {renderContent()}
       </MainContent>
+      <AddSongModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddSong}
+      />
     </AppContainer>
   );
 }
