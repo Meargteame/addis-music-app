@@ -5,7 +5,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --mode development --open",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "webpack serve --mode development --open",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:mock": "set REACT_APP_USE_MOCK_SERVER=true && webpack serve --mode development --open"
   },
   "repository": {
     "type": "git",
@@ -39,6 +43,7 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
+    "concurrently": "^9.2.0",
     "html-webpack-plugin": "^5.6.3",
     "miragejs": "^0.1.48"
   }

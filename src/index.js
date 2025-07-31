@@ -9,11 +9,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 
-// Initialize MirageJS mock server in development
-if (process.env.NODE_ENV === 'development') {
+// Initialize MirageJS mock server in development (DISABLED - Using real backend)
+// Enable this if you want to use mock data instead of the Express backend
+if (process.env.REACT_APP_USE_MOCK_SERVER === 'true' && process.env.NODE_ENV === 'development') {
   const { makeServer } = require('./server');
   makeServer({ environment: 'development' });
   console.log('🎭 MirageJS mock server initialized');
+} else {
+  console.log('🔗 Using Express.js backend at http://localhost:5000');
 }
 
 const root = createRoot(document.getElementById('root'));

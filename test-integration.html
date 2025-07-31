@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddisMusic Backend Integration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🎵 AddisMusic Backend Integration Test</h1>
+    <p>This page tests the Express.js backend API endpoints.</p>
+    
+    <button onclick="testSongs()">Test GET /api/songs</button>
+    <button onclick="testUser()">Test GET /api/user</button>
+    <button onclick="testStats()">Test GET /api/stats</button>
+    <button onclick="testCreateSong()">Test POST /api/songs</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(title, success, data) {
+            const div = document.createElement('div');
+            div.className = `result ${success ? 'success' : 'error'}`;
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+            resultsDiv.appendChild(div);
+        }
+
+        async function testSongs() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/songs`);
+                const data = await response.json();
+                addResult('✅ GET /api/songs', true, data);
+            } catch (error) {
+                addResult('❌ GET /api/songs', false, { error: error.message });
+            }
+        }
+
+        async function testUser() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/user`);
+                const data = await response.json();
+                addResult('✅ GET /api/user', true, data);
+            } catch (error) {
+                addResult('❌ GET /api/user', false, { error: error.message });
+            }
+        }
+
+        async function testStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/stats`);
+                const data = await response.json();
+                addResult('✅ GET /api/stats', true, data);
+            } catch (error) {
+                addResult('❌ GET /api/stats', false, { error: error.message });
+            }
+        }
+
+        async function testCreateSong() {
+            try {
+                const newSong = {
+                    title: 'Integration Test Song',
+                    artist: 'Test Artist',
+                    album: 'Test Album',
+                    genre: 'jazz'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/songs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newSong)
+                });
+
+                const data = await response.json();
+                addResult('✅ POST /api/songs', true, data);
+            } catch (error) {
+                addResult('❌ POST /api/songs', false, { error: error.message });
+            }
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            testSongs();
+            setTimeout(testUser, 1000);
+            setTimeout(testStats, 2000);
+        };
+    </script>
+</body>
+</html>
