@@ -1,230 +1,98 @@
-# AddisMusic Backend API
 
-A fully functional Express.js backend that replaces MirageJS mock server with real API endpoints. This backend provides all the same functionality as the frontend expects, with in-memory data storage.
+# Addis Music App - Backend
 
-## 🚀 Quick Start
+This is the backend server for the Addis Music App, built with Node.js, Express, and MongoDB. It provides a RESTful API for managing songs, users, and application data.
 
-```bash
-# Install dependencies
-npm install
+## Table of Contents
 
-# Start the server
-npm start
+- [Features](#features)
+- [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Running the Server](#running-the-server)
+- [API Endpoints](#api-endpoints)
 
-# Or run directly
-node index.js
-```
+## Features
 
-The server will start on `http://localhost:5000`
+-   **RESTful API**: Provides a complete set of endpoints for song and user management.
+-   **MongoDB Integration**: Uses Mongoose to connect to a MongoDB database for persistent data storage.
+-   **Environment-based Configuration**: Uses `.env` files for easy configuration of database connections and other settings.
+-   **Modular Structure**: Organized into controllers, routes, and models for better maintainability.
 
-## 📡 API Endpoints
+## Technologies
 
-### Songs API
+-   **Node.js**: JavaScript runtime environment.
+-   **Express**: Web framework for Node.js.
+-   **MongoDB**: NoSQL database for data storage.
+-   **Mongoose**: ODM for MongoDB.
+-   **dotenv**: For managing environment variables.
+-   **nodemon**: For automatic server restarts during development.
 
-| Method | Endpoint | Description | Query Parameters |
-|--------|----------|-------------|------------------|
-| `GET` | `/api/songs` | List all songs with filtering and pagination | `genre`, `search`, `limit`, `offset` |
-| `GET` | `/api/songs/:id` | Get single song details | - |
-| `POST` | `/api/songs` | Create new song | Song data in body |
-| `PUT` | `/api/songs/:id` | Update existing song | Song data in body |
-| `DELETE` | `/api/songs/:id` | Delete song | - |
-| `POST` | `/api/songs/:id/play` | Increment play count | - |
+## Prerequisites
 
-### Additional Endpoints
+-   Node.js (v14 or later)
+-   npm (v6 or later)
+-   MongoDB Atlas account or a local MongoDB instance.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/user` | Get user profile |
-| `GET` | `/api/stats` | Get application statistics |
-| `GET` | `/api/songs/genres` | Get available genres |
-| `GET` | `/api/songs/search` | Advanced search |
+## Installation
 
-### Admin Endpoints
+1.  **Clone the repository**:
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/admin/reset` | Reset all data to initial state |
-| `GET` | `/api/admin/storage-info` | Get memory usage info |
+    ```bash
+    git clone https://github.com/Meargteame/addis-music-app.git
+    cd addis-music-app/backend
+    ```
 
-## 📄 Response Format
+2.  **Install dependencies**:
 
-All endpoints return standardized JSON responses:
+    ```bash
+    npm install
+    ```
 
-### Success Response
-```json
-{
-  "success": true,
-  "data": { /* response data */ },
-  "message": "Operation completed successfully"
-}
-```
+3.  **Create a `.env` file** in the `backend` directory and add your MongoDB connection string:
 
-### Error Response
-```json
-{
-  "success": false,
-  "error": "Error description",
-  "code": 400
-}
-```
+    ```env
+    MONGO_URI=your_mongodb_connection_string
+    ```
 
-## 🎵 Sample Song Data Structure
+## Running the Server
 
-```json
-{
-  "id": 1,
-  "title": "Tizita",
-  "artist": "Mahmoud Ahmed",
-  "album": "Soul of Addis",
-  "genre": "jazz",
-  "duration": "3:45",
-  "year": 2010,
-  "cover_image": "https://picsum.photos/300/300?random=123",
-  "audio_file": null,
-  "lyrics": "Mock lyrics content...",
-  "play_count": 1250,
-  "date_added": "2024-01-15T10:30:00.000Z"
-}
-```
+-   **Development Mode**:
 
-## 👤 User Profile Structure
+    To run the server in development mode with automatic restarts, use:
 
-```json
-{
-  "id": 1,
-  "name": "Music Lover",
-  "email": "user@addismusic.com",
-  "role": "Music Enthusiast",
-  "location": "Addis Ababa, Ethiopia",
-  "bio": "Passionate about Ethiopian music and discovering new artists",
-  "avatar": "https://picsum.photos/150/150?random=user",
-  "join_date": "2023-01-15T00:00:00.000Z",
-  "favorite_genres": ["jazz", "pop", "traditional"],
-  "stats": {
-    "total_songs_added": 15,
-    "total_favorites": 8,
-    "total_plays": 1250,
-    "member_since": "2023-01-15"
-  }
-}
-```
+    ```bash
+    npm run dev
+    ```
 
-## 📊 Statistics Response
+-   **Production Mode**:
 
-```json
-{
-  "total_songs": 12,
-  "total_artists": 10,
-  "popular_genres": {
-    "jazz": 3,
-    "pop": 2,
-    "rock": 2,
-    "hiphop": 2,
-    "electronic": 2,
-    "classical": 1
-  },
-  "total_plays": 45678,
-  "newest_song": "Digital Ethiopia",
-  "user_stats": {
-    "total_songs_added": 15,
-    "total_favorites": 8,
-    "total_plays": 1250,
-    "member_since": "2023-01-15"
-  }
-}
-```
+    To run the server in production mode, use:
 
-## 🔧 Features
+    ```bash
+    npm start
+    ```
 
-- ✅ **CORS Enabled** - Ready for frontend integration
-- ✅ **JSON Parsing** - Handles JSON request bodies
-- ✅ **In-Memory Storage** - No database required for development
-- ✅ **Mock Data Generation** - Automatic Ethiopian music-themed data
-- ✅ **Error Handling** - Comprehensive error responses
-- ✅ **Filtering & Search** - Support for genre filtering and text search
-- ✅ **Pagination** - Efficient data loading with limit/offset
-- ✅ **Statistics** - Real-time stats calculation
-- ✅ **Play Count Tracking** - Track song popularity
-- ✅ **Admin Routes** - Data management and debugging
+The server will start on port `5050` by default.
 
-## 🏗️ Architecture
+## API Endpoints
 
-- **Express.js 4.x** - Web framework
-- **CORS** - Cross-origin resource sharing
-- **In-Memory Arrays** - Simple data storage
-- **RESTful Design** - Standard HTTP methods and status codes
-- **Modular Structure** - Ready for database integration
+### Songs
 
-## 🔄 Replacing MirageJS
+-   `GET /api/songs`: Get all songs.
+-   `GET /api/songs/:id`: Get a single song by ID.
+-   `POST /api/songs`: Create a new song.
+-   `PUT /api/songs/:id`: Update a song by ID.
+-   `DELETE /api/songs/:id`: Delete a song by ID.
 
-This backend is a drop-in replacement for MirageJS. To use it:
+### User
 
-1. Start this backend server on port 5000
-2. Update the frontend API base URL to point to `http://localhost:5000/api`
-3. Disable MirageJS in the frontend
-4. All existing frontend code will work without changes!
+-   `GET /api/user`: Get user profile information.
 
-## 🛠️ Development
+### Stats
 
-### Adding New Endpoints
+-   `GET /api/stats`: Get application statistics.
 
-1. Add route handler to `index.js`
-2. Follow the response format conventions
-3. Update this README
+### Genres
 
-### Database Integration
-
-The code is structured to make database integration easy:
-
-1. Replace in-memory arrays with database calls
-2. Keep the same response format
-3. Add database connection configuration
-4. Implement data persistence
-
-### Environment Variables
-
-```bash
-PORT=5000  # Server port (default: 5000)
-```
-
-## 🧪 Testing
-
-Test endpoints using curl, Postman, or any HTTP client:
-
-```bash
-# Get all songs
-curl http://localhost:5000/api/songs
-
-# Get songs with genre filter
-curl http://localhost:5000/api/songs?genre=jazz
-
-# Search songs
-curl http://localhost:5000/api/songs?search=tizita
-
-# Get user profile
-curl http://localhost:5000/api/user
-
-# Get statistics
-curl http://localhost:5000/api/stats
-
-# Create new song
-curl -X POST http://localhost:5000/api/songs \
-  -H "Content-Type: application/json" \
-  -d '{"title":"New Song","artist":"Test Artist","genre":"pop"}'
-```
-
-## 📦 Dependencies
-
-- **express**: ^4.18.2 - Web framework
-- **cors**: ^2.8.5 - CORS middleware
-- **body-parser**: ^1.20.2 - JSON parsing (built into Express 4.16+)
-
-## 🎯 Next Steps
-
-1. **Database Integration** - Add MongoDB or PostgreSQL
-2. **Authentication** - Add JWT-based auth
-3. **File Upload** - Handle audio file uploads
-4. **Caching** - Add Redis for performance
-5. **Testing** - Add unit and integration tests
-6. **Documentation** - Add OpenAPI/Swagger docs
-7. **Docker** - Containerize the application
+-   `GET /api/genres`: Get a list of available genres.

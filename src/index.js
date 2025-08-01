@@ -16,7 +16,7 @@ if (process.env.REACT_APP_USE_MOCK_SERVER === 'true' && process.env.NODE_ENV ===
   makeServer({ environment: 'development' });
   console.log('🎭 MirageJS mock server initialized');
 } else {
-  console.log('🔗 Using Express.js backend at http://localhost:5000');
+  console.log('🔗 Using Express.js backend via proxy');
 }
 
 const root = createRoot(document.getElementById('root'));

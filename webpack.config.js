@@ -1,7 +1,8 @@
-import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
-export default {
+module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve('dist'),
@@ -13,6 +14,12 @@ export default {
     static: './dist',
     port: 3000,
     open: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:5050',
+      },
+    ],
   },
   module: {
     rules: [
@@ -33,6 +40,12 @@ export default {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        REACT_APP_USE_MOCK_SERVER: JSON.stringify(process.env.REACT_APP_USE_MOCK_SERVER),
+      }
     }),
   ],
 };
